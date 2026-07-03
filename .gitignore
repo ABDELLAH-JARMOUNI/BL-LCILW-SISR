@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Data and run outputs (do not commit large datasets or generated images)
+data/
+Set5/
+sr_outputs/
+rgdn_checkpoints/
+checkpoint_epoch_*.pth
+
+# Reports / presentations (large binaries; add manually or via Git LFS)
+docs/*.pdf
+report.pdf
+presentation.pdf
+*.pptx
+
+# Keep the shipped model checkpoints (override the blanket rule below).
+# By default we DO commit the six released .pth files at the repo root.
+# If you would rather keep them out of git, uncomment the next line:
+# *.pth

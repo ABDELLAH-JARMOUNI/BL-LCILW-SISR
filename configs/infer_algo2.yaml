@@ -1,0 +1,31 @@
+# Inference / evaluation defaults
+# Scripts: infer_algo2.py, infer_algo2_inspect.py, evaluate_models.py
+#
+# Full Algorithm 2 pipeline on a test set:
+#   python infer_algo2.py \
+#     --test_dir ./Set5 \
+#     --ckpt bl_lcilw_algo2_full.pth \
+#     --rgdn best_model_rgdn.pth
+#
+# Same, plus per-image w / alpha statistics:
+#   python infer_algo2_inspect.py \
+#     --test_dir ./Set5 \
+#     --ckpt bl_lcilw_algo2_full.pth \
+#     --rgdn best_model_rgdn.pth
+#
+# Interpolation-stage comparison (standard vs global vs spatial LCI):
+#   python evaluate_models.py --set5_dir ./Set5
+
+ckpt: bl_lcilw_algo2_full.pth
+rgdn: best_model_rgdn.pth
+test_dir: ./Set5
+save_dir: ./sr_outputs
+
+scale: 4
+pad: 8                   # HR reflect padding; must match training and be divisible by scale
+denoiser_relax: 0.5      # used only if the checkpoint does not store its own relaxation
+override_L: null         # set an integer to override the ADMM iteration count from the checkpoint
+
+# evaluate_models.py inputs
+global_weights: w_star_global.pth
+spatial_weights: phi_xi_spatial_weights.pth

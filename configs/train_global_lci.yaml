@@ -1,0 +1,32 @@
+# Algorithm 1 — global weighted LCI training
+# Script:     train_global_lci.py
+# Produces:   w_star_global.pth
+#
+# Reproduce:
+#   python train_global_lci.py \
+#     --data_root ./data/BSDS500 --set5_dir ./Set5 \
+#     --lambda_int 0.1 --lambda_leb 1e-3 --epochs 100
+
+data_root: ./data/BSDS500
+set5_dir: ./Set5
+save_path: w_star_global.pth
+
+# Interpolation operator
+scale: 4                 # x4 super-resolution
+n_nodes: 8               # Chebyshev nodes
+hr_patch: 128            # HR training patch size (128x128)
+
+# Optimization
+epochs: 100
+batch_size: 16
+lr: 1.0e-3               # Adam
+
+# Weight-learning penalties
+lambda_leb: 1.0e-3       # Lebesgue-constant penalty (conditioning)
+lambda_int: 0.1          # interpolation-preservation penalty (pulls w -> 1)
+beta: 10.0               # log-sum-exp sharpness for the Lebesgue surrogate
+
+# Dataset sampling
+samples_per_image_train: 30
+samples_per_image_val: 5
+augment: true            # flips and rotations

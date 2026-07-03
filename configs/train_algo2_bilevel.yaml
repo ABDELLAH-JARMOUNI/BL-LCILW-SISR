@@ -1,0 +1,54 @@
+# Algorithm 2 — bilevel BL-LCILW training (PnP-ADMM + implicit gradients)
+# Script:     train_algo2_bilevel.py
+# Requires:   phi_xi_spatial_weights.pth  (w-net init)
+#             best_model_rgdn.pth         (frozen PnP denoiser)
+# Produces:   bl_lcilw_algo2_full.pth
+#             bl_lcilw_algo2_w_final.pth
+#             bl_lcilw_algo2_alpha_final.pth
+#
+# Reproduce:
+#   python train_algo2_bilevel.py \
+#     --data_root ./data/BSDS500 \
+#     --epochs 30 --batch_size 4 --hr_patch 192 --scale 4 \
+#     --admm_iters 12 --neumann_iters 8 \
+#     --mu 0.01 --rho 0.05 \
+#     --lr_w 3e-5 --lr_alpha 1e-4 \
+#     --lambda_leb 1e-3 --lambda_int 1e-3 \
+#     --denoiser_relax 1.0 --pad 8 --simultaneous
+
+data_root: ./data/BSDS500
+w_init: phi_xi_spatial_weights.pth
+rgdn_init: best_model_rgdn.pth
+out_prefix: bl_lcilw_algo2
+
+# Problem setup
+scale: 4                 # x4 super-resolution
+hr_patch: 192            # HR training patch size (192x192)
+
+# Optimization
+epochs: 30
+batch_size: 4
+
+# ADMM / bilevel structure
+admm_iters: 12           # L: ADMM (upper-level) steps per image
+neumann_iters: 8         # K: truncated-Neumann order for the inverse Hessian
+mu: 0.01                 # LCILW interpolation-prior weight
+rho: 0.05                # ADMM penalty parameter  (sigma = alpha / rho)
+
+# Upper-level learning rates (Adam)
+lr_w: 3.0e-5             # w-network (dJ/dw is mu-scaled, so smaller step)
+lr_alpha: 1.0e-4         # alpha-network
+
+# Soft admissibility penalties on w
+lambda_leb: 1.0e-3
+lambda_int: 1.0e-3
+beta: 10.0
+
+# Denoiser / boundary handling
+denoiser_relax: 1.0      # 1.0 = raw RGDN; <1 uses averaged operator v + r*(RGDN(v)-v)
+pad: 8                   # HR reflect padding (cropped before loss/metric)
+grad_clip: 1.0
+
+# Update mode
+simultaneous: true       # one shared implicit gradient for w and alpha per step
+                         # (set false for the paper-exact sequential Gauss-Seidel update)

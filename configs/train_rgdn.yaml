@@ -1,0 +1,50 @@
+# RGDN denoiser training (Plug-and-Play prior for Algorithm 2)
+# Script:     train_rgdn_bsds500.py
+# Produces:   best_model_rgdn.pth  (in --save_dir; copy to repo root for Algorithm 2)
+#
+# Reproduce:
+#   python train_rgdn_bsds500.py \
+#     --data_root ./data/BSDS500 \
+#     --save_dir ./rgdn_checkpoints \
+#     --batch_size 32 --num_workers 8 --epochs 300 \
+#     --val_every 10 --save_every 10 \
+#     --jacobian_weight 3e-4 --jacobian_eps 0.003
+
+data_root: ./data/BSDS500
+train_split: train
+val_split: val
+save_dir: ./rgdn_checkpoints
+
+# Model capacity
+num_features: 64         # feature channels
+num_blocks: 8            # residual blocks
+patch_size: 64           # 64x64 training patches
+
+# Optimization
+epochs: 300
+batch_size: 32
+num_workers: 8
+lr: 3.0e-4               # Adam
+weight_decay: 1.0e-4
+grad_clip: 1.0
+
+# Loss weights
+gradient_weight: 0.1     # gradient-preservation term
+identity_weight: 0.1     # identity term (clean input at tiny sigma)
+
+# Local Jacobian (Lipschitz) penalty
+# NOTE: the report table lists jacobian_weight = 1e-4; the documented run
+# command uses 3e-4. Both are recorded here; the shipped checkpoint used the
+# run-command value.
+jacobian_weight: 3.0e-4
+jacobian_margin: 0.9
+jacobian_eps: 3.0e-3     # finite-difference step
+jacobian_every: 1        # apply penalty every N optimizer steps
+
+# Checkpointing
+val_every: 10
+save_every: 10
+
+# Training noise distribution (matches the ADMM operating range sigma = alpha/rho):
+#   70% of samples drawn from sigma in [0.00, 0.15]
+#   30% of samples drawn from sigma in [0.15, 0.50]
