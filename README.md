@@ -230,8 +230,7 @@ non-expansiveness proof.
 ## Roadmap
 
 This project is under active development. Planned directions include broader
-benchmark coverage, alternative denoiser priors, and a config-driven training
-entry point (the `configs/` YAMLs are already structured for this).
+benchmark coverage, alternative denoiser priors, and beating deep learning methods.
 
 ## Author
 
